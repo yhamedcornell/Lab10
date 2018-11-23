@@ -1,0 +1,44 @@
+---
+title: "Lab10_HW"
+author: "Huaian Yu"
+date: "11/22/2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Q1:calculates cumulative distribution function of a binomial random variable
+**my function**
+```{r}
+my_pbinom <- function(q, n, p){
+  result <- sum(dbinom(0:q, n, p))
+  return(result)
+}
+```
+
+**Test my function and compare result with power.t.test: **
+```{r}
+round(my_pbinom(45,100,0.4), 3)
+round(pbinom(45,100,0.4), 3)
+```
+#2 Write a function calculating power: 
+**my function**
+```{r}
+my_power <- function(n, delta, sd, sig.level){
+  num_of_simulations <- 10000
+  p_value <- rep(0, num_of_simulations)
+  for (i in 1 : num_of_simulations){
+    data_sample<- rnorm(n, delta, sd)
+    test_result <- t.test(data_sample, mu = 0, conf.level = (1 - sig.level))
+    p_value[i] <- test_result$p.value
+  }
+  return(sum(p_value < sig.level) / num_of_simulations)
+}
+```
+**Test my function and compare result with power.t.test: **
+```{r}
+power <- my_power(n = 30, delta = 0.5, sd = 1, sig.level = 0.05)
+round(power, 3)
+round(power.t.test(n = 30, delta = 0.5, sd = 1, sig.level = 0.05, type = "one.sample")$power, 3)
+```
